@@ -45,7 +45,12 @@ text {
   fill: #fff;
   font-size: 10px;
 }
-
+circle {
+  fill: none;
+  fill-opacity: .5;
+  stroke: white;
+  stroke-width: 1.5px;
+}
 </style>
 
 <section style="text-align:center;padding-top:5em;">
@@ -146,14 +151,14 @@ text {
  </ul>
 </section>
 
-<section style="padding:5em 9em;">
+<section id="joinsec"style="padding:5em 9em;">
   <p>Data joins, exits, enters
-
+  <figure id="join"> </figure>
 </section>
 
-<section style="padding:5em 9em;">
+<section id="dataBound" style="padding:5em 9em;">
   <p>Once data is bound to a node, we can change properties of the node based on the data
-  <figure> </figure>
+  <figure id="boundFig"> </figure>
 </section>
 
 <section style="font-size:80%;padding:5em 9em;">
@@ -193,9 +198,14 @@ var mystack = stack()
 
 var section = d3.selectAll("section"),
     hist = d3.select("#histogram"),
-    histIndex = section[0].indexOf(hist.node());
+    histIndex = section[0].indexOf(hist.node()),
     eff = d3.select("#effectiveVis"),
-    pathIndex = section[0].indexOf(eff.node());
+    pathIndex = section[0].indexOf(eff.node()),
+    join = d3.select("#joinsec"),
+    joinIndex = section[0].indexOf(join.node()),
+    bound = d3.select("#dataBound"),
+    boundIndex = section[0].indexOf(bound.node());
+
 
 var histInterval;
 
@@ -207,11 +217,16 @@ function activate(d, i) {
       }, 3000);
     };
   if (i === pathIndex) drawPath();
+  if (i === joinIndex) drawJoin();
+  if (i === boundIndex) drawBound();
 
 }
 
 function deactivate(d, i) {
   if (i === histIndex) stopHist();
+  if (i === pathIndex) eff.selectAll("svg").remove();
+  if (i === joinIndex) join.selectAll("svg").remove();
+  if (i === boundIndex) bound.selectAll("svg").remove();
 }
 
 // Histogram
@@ -415,5 +430,80 @@ function drawPath() {
     data.shift();
   }
 }
+//
+function drawJoin() {
 
+  var joinFig = join.selectAll("#join"),
+      margin = {top: 30, right: 30, bottom: 30, left: 30},
+      width = 400 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
+  var svg = joinFig.selectAll("svg").data([{}]);
+      svg.enter()
+              .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+
+  var svgG = svg.selectAll("g#drawingArea").data([{}]);
+      svgG.enter()
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+          .attr("id", "drawingArea");
+
+  var data = svgG.append("g").attr("transform", "translate(110,110)");
+      data.append("circle").style("fill", "#3182bd");
+      data.append("text").attr("y", -120).text("Data").style("font-weight", "bold");
+      data.append("text").attr("x", -50).text("Enter");
+
+  svgG.append("text").attr("x", 170).attr("y", 110).text("Update");
+
+  var elements = svgG.append("g").attr("transform", "translate(230,110)");
+  elements.append("circle").style("fill", "#e6550d");
+  elements.append("text").attr("y", -120).text("Elements").style("font-weight", "bold");
+  elements.append("text").attr("x", 50).text("Exit");
+
+  svgG.selectAll("circle")
+      .attr("r", 110);
+
+  svgG.selectAll("text")
+      .attr("dy", ".35em")
+      .attr("text-anchor", "middle");
+}
+
+function drawBound() {
+  var boundFig = bound.selectAll("#boundFig"),
+      margin = {top: 30, right: 30, bottom: 30, left: 30},
+      width = 600 - margin.left - margin.right,
+      height = 200 - margin.top - margin.bottom;
+  var svg = boundFig.selectAll("svg").data([{}]);
+      svg.enter()
+              .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+
+  var svgG = svg.selectAll("g#drawingArea").data([{}]);
+      svgG.enter()
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+          .attr("id", "drawingArea");
+
+  var circle = svgG.selectAll("circle")
+    .data([300, 1000, 7000], function(d) { return d; });
+
+  circle.enter()
+    .append("circle")
+      .attr("cy", 60)
+      .attr("cx", function(d, i) { return i * 200 + 30; });
+  var text = svgG.selectAll("text")
+    .data([600, 1000, 7000], function(d) { return d; });
+  text.enter()
+      .append("text")
+        .attr("y", 60)
+        .attr("x", function(d, i) { return i * 200 + 15; })
+        .style("font-size", "12px")
+        .text(function(d) {return d;});
+  circle
+      .attr("r", function(d) { return Math.sqrt(d); });
+
+  circle.exit().remove();
+}
 </script>
