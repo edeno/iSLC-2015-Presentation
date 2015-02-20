@@ -41,7 +41,7 @@ path, line {
   stroke: #fff;
   shape-rendering: crispEdges;
 }
-.xAxis text, .yAxis text {
+text {
   fill: #fff;
   font-size: 10px;
 }
@@ -301,22 +301,22 @@ function stopHist() {
 
 function startPath() {
   var n = 40,
-      randomFunc = d3.random.normal(0, .2),
+      randomFunc = d3.random.normal(0, .4),
       data = d3.range(n).map(randomFunc),
       pathFig = eff.select("#pathVis");
   var margin = {top: 20, right: 20, bottom: 20, left: 40},
-      width = 400 - margin.left - margin.right,
+      width = 800 - margin.left - margin.right,
       height = 200 - margin.top - margin.bottom;
-  var x = d3.scale.linear()
+  var xScale = d3.scale.linear()
             .domain([0, n - 1])
             .range([0, width]);
-  var y = d3.scale.linear()
+  var yScale = d3.scale.linear()
             .domain([-1, 1])
             .range([height, 0]);
   var line = d3.svg.line()
             .interpolate("basis")
-            .x(function(d, i) { return x(i); })
-            .y(function(d, i) { return y(d); });
+            .x(function(d, i) { return xScale(i); })
+            .y(function(d, i) { return yScale(d); });
   var svg = pathFig.selectAll("svg").data([{}]);
       svg.enter()
               .append("svg")
@@ -336,19 +336,23 @@ function startPath() {
               .attr("width", width)
               .attr("height", height);
 
-  var xAxis = svgG.selectAll("g.xAxis").data([{}]);
-  xAxis.enter()
+  var xAxis = d3.svg.axis()
+                  .scale(xScale)
+                  .ticks(0)
+                  .orient("bottom");
+  var xAxisG = svgG.selectAll("g.xAxis").data([{}]);
+  xAxisG.enter()
       .append("g")
         .attr("class", "xAxis")
-        .attr("transform", "translate(0," + y(0) + ")");
-  xAxis
-    .call(d3.svg.axis().scale(x).ticks(0).orient("bottom"));
+        .attr("transform", "translate(0," + yScale(0) + ")");
+  xAxisG
+    .call(xAxis);
   var yAxis = svgG.selectAll("g.yAxis").data([{}]);
   yAxis.enter()
     .append("g")
       .attr("class", "yAxis");
   yAxis
-    .call(d3.svg.axis().scale(y).orient("left"));
+    .call(d3.svg.axis().scale(yScale).ticks(3).orient("left"));
   var clip = svgG.selectAll("g#clip").data([{}]);
       clip.enter()
         .append("g")
@@ -362,6 +366,7 @@ function startPath() {
     .attr("class", "line");
   path
     .attr("d", line);
+  var format = d3.format(".1f");
   tick();
 
   function tick() {
@@ -374,8 +379,24 @@ function startPath() {
     .transition()
       .duration(500)
       .ease("linear")
-    .attr("transform", "translate(" + x(-1) + ",0)")
+    .attr("transform", "translate(" + xScale(-1) + ",0)")
       .each("end", tick);
+    var text = clip.selectAll("text.number")
+          .data(data);
+    text.exit()
+        .remove();
+    text.enter()
+      .append("text")
+      .attr("class", "number")
+      .attr("y", height)
+      .style("font-size", "9px");
+    text
+      .attr("x", function(d, i) {
+        return xScale(i);
+      })
+      .text(function(d) {
+        return format(d);
+        });
     // pop the old data point off the front
     data.shift();
   }
