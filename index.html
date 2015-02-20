@@ -55,7 +55,7 @@ text {
 </section>
 
 <section id="histogram" style="padding:5em 9em;">
-  <p>statistics are a way of summarizing data
+  <p>Statistics are a way of summarizing data
     <figure id="histVis">
     </figure>
 </section>
@@ -71,18 +71,21 @@ text {
 </section>
 
 <section style="padding:5em 9em;">
-  <p>statistics is summary with transparency (ideally)
+  <p>Statistics is summary with transparency (ideally)
 
 </section>
 
 <section id="effectiveVis" style="padding:5em 9em;">
-  <p>visualizations are the most effective way to display data summaries
+  <p>Visualizations are the most effective way to display data summaries
     <figure id="pathVis"> </figure>
 </section>
 
 <section style="padding:5em 9em;">
   <p>Problems with current static figures
-  <figure> </figure>
+  <figure>
+    <img src="static-figure.jpg" alt="static-figure"  height="300" width="400" />
+    <img src="network.jpg" alt="network"  height="300" width="400" />
+  </figure>
 </section>
 
 <section style="padding:5em 9em;">
@@ -93,12 +96,16 @@ text {
 </section>
 
 <section style="padding:5em 9em;">
-  <p>What is d3?
+  <p>What is <a href="http://d3js.org/">D3</a>?
+  <br>
   <br> D3 is a low level javascript based library for turning data into web elements
 </section>
 
 <section style="padding:5em 9em;">
   <p>Your browser requests and receives a html document from a server
+  <figure>
+    <img src="client-server.jpg" alt="client server figure" />
+  </figure>
 </section>
 <section style="padding:5em 9em;">
   <p>Your browser interprets the html and builds a document object model (DOM)
@@ -116,31 +123,41 @@ text {
      <li>nodes are objects with properties corresponding to html elements </li>
      <li>hierarchy is based on the html encapsulation</li>
    </ul>
+  <figure>
+    <img src="html.png" alt="dom-tree" />
+  </figure>
 </section>
 
 <section style="padding:5em 9em;">
   <p>You use javascript to manipulate the DOM
-  <br>D3 gives you tools to make this easier
+  <br>
+  <br>D3 gives you tools to manipulate the DOM based on data
 </section>
 
-<section style="padding:5em 9em;">
-  <p>Data joins, exits, enters
-  <br>data is stored as a property of a node:
-  <br> if dataset changes, d3 can handle those changes easily by allowing you to decide what to do with
+<section style="padding:5em 9em; font-size:80%;">
+  <p>
+  <br>Data is stored as a property of a node.
+  <br>
+  <br> If dataset changes, d3 can handle those changes easily by allowing you to decide what to do with:
   <ul>
-   <li>new data not bound to a node</li>
-   <li>existing data bound to a node</li>
-   <li>data that no longer exists bound to a node</li>
+   <li>new data not bound to a node (data enter)</li>
+   <li>existing data bound to a node (data join)</li>
+   <li>data that no longer exists bound to a node (data exits)</li>
  </ul>
 </section>
 
 <section style="padding:5em 9em;">
-  <p>Data joins, exits, enters Examples
+  <p>Data joins, exits, enters
+
+</section>
+
+<section style="padding:5em 9em;">
+  <p>Once data is bound to a node, we can change properties of the node based on the data
   <figure> </figure>
 </section>
 
 <section style="font-size:80%;padding:5em 9em;">
-  <p>D3 pros and cons
+  <p>D3 Pros and Cons
   <ul> Pros
    <li>Web based - easy to share</li>
    <li>Flexible styling - web design constantly evolving </li>
@@ -189,9 +206,8 @@ function activate(d, i) {
               startHist();
       }, 3000);
     };
-  if (i === pathIndex) {
-    startPath();
-  }
+  if (i === pathIndex) drawPath();
+
 }
 
 function deactivate(d, i) {
@@ -199,7 +215,6 @@ function deactivate(d, i) {
 }
 
 // Histogram
-
 function startHist() {
   var n = 50,
       randomFunc = d3.random.normal(5, 3),
@@ -297,9 +312,8 @@ function startHist() {
 function stopHist() {
   histInterval = clearInterval(histInterval);
 }
-
-
-function startPath() {
+// Moving Line
+function drawPath() {
   var n = 40,
       randomFunc = d3.random.normal(0, .4),
       data = d3.range(n).map(randomFunc),
@@ -402,7 +416,4 @@ function startPath() {
   }
 }
 
-function stopPath() {
-
-}
 </script>
