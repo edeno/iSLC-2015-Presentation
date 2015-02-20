@@ -314,6 +314,7 @@ function startPath() {
             .domain([-1, 1])
             .range([height, 0]);
   var line = d3.svg.line()
+            .interpolate("basis")
             .x(function(d, i) { return x(i); })
             .y(function(d, i) { return y(d); });
   var svg = pathFig.selectAll("svg").data([{}]);
@@ -341,7 +342,7 @@ function startPath() {
         .attr("class", "xAxis")
         .attr("transform", "translate(0," + y(0) + ")");
   xAxis
-    .call(d3.svg.axis().scale(x).orient("bottom"));
+    .call(d3.svg.axis().scale(x).ticks(0).orient("bottom"));
   var yAxis = svgG.selectAll("g.yAxis").data([{}]);
   yAxis.enter()
     .append("g")
