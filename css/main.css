@@ -1,0 +1,48 @@
+@import url(http://fonts.googleapis.com/css?family=PT+Serif|PT+Serif:b|PT+Serif:i);
+
+section {
+  background: #000;
+  color: #fff;
+  padding: 2em;
+  font-family: "PT Serif", Baskerville, Georgia;
+}
+
+#follow {
+  background: none;
+}
+
+.grey {
+  color: #777;
+}
+
+a:link,
+a:visited {
+  color: orange;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.bar rect {
+  fill: steelblue;
+  shape-rendering: crispEdges;
+  stroke: #fff;
+}
+
+path, line {
+  fill: none;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+text {
+  fill: #fff;
+  font-size: 10px;
+}
+circle {
+  fill: none;
+  fill-opacity: .5;
+  stroke: white;
+  stroke-width: 1.5px;
+}
