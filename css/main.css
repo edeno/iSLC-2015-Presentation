@@ -25,12 +25,6 @@ a:hover {
   text-decoration: underline;
 }
 
-.bar rect {
-  fill: steelblue;
-  shape-rendering: crispEdges;
-  stroke: #fff;
-}
-
 path, line {
   fill: none;
   stroke: #fff;
@@ -38,11 +32,38 @@ path, line {
 }
 text {
   fill: #fff;
-  font-size: 10px;
+  font-size: 16px;
 }
 circle {
   fill: none;
   fill-opacity: .5;
   stroke: white;
   stroke-width: 1.5px;
+}
+rect {
+  fill: none;
+  fill-opacity: .5;
+  stroke: white;
+  stroke-width: 1.5px;
+}
+div.chart {
+  float: left;
+  padding-right: 5px;
+  padding-bottom: 5px;
+  padding-top:0;
+  padding-left:0;
+}
+.parenthetical {
+  font-size: 75%;
+}
+.title-slide {
+  text-align: center;
+  padding-top: 3em;
+}
+.slide {
+  padding: 3em 9em;
+}
+
+#getting-started.slide, #pros-cons.slide {
+  font-size: 80%;
 }

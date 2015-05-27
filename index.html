@@ -10,129 +10,106 @@
   </head>
   <body role="document">
 
-    <section style="text-align:center;padding-top:5em;">
-      <p style="font-size:120%;"> <b>Statistics, Visualizations, and D3</b>
+    <section class="title-slide">
+      <p style="font-size:110%;"> <b>Creating Custom Scientific Visualizations using D3</b>
         <br>
         <br> by Eric Denovellis
+      </p>
     </section>
 
-    <section id="histogram" style="padding:5em 9em;">
-      <p>Statistics are a way of summarizing data
-        <figure id="histVis">
+    <section id="anscombe" class="slide">
+      <p>WHY: Statistical summaries can be misleading <br>
+        <span class="parenthetical">(Visualizations help us check our assumptions)</span>
+      </p>
+        <figure id="anscombeVis">
         </figure>
     </section>
 
-    <section style="padding:5em 9em;">
-      <p>that acknowledges:
-         <ul>
-          <li>Uncertainty</li>
-          <li>Variability</li>
-          <li>Assumptions</li>
-          <li>Complexity</li>
+    <section class="slide">
+      <p>WHY: We are collecting more data <br>
+        <span class="parenthetical">(Dynamic visualizations can help us quickly make many comparisons)</span>
+        <ul>
+           <li>Harder to display all the data on a single static figure</li>
+           <li>More data &roarr; more complex theories &roarr; more comparisons</li>
+           <li>Multidimensional datat is hard to understand</li>
         </ul>
+      </p>
     </section>
 
-    <section style="padding:5em 9em;">
-      <p>Statistics is summary with transparency (ideally)
-
-    </section>
-
-    <section id="effectiveVis" style="padding:5em 9em;">
-      <p>Visualizations are the most effective way to display data summaries
-        <figure id="pathVis"> </figure>
-    </section>
-
-    <section style="padding:5em 9em;">
-      <p>Problems with current static figures
-      <figure>
-        <img src="img/static-figure.jpg" alt="static-figure"  height="300" width="400" />
-        <img src="img/network.jpg" alt="network"  height="300" width="400" />
-      </figure>
-    </section>
-
-    <section style="padding:5em 9em;">
-      <p>Examples of dynamic figures
+    <section class="slide">
+      <p>Examples of dynamic visualizations
         <br><a href="http://mbtaviz.github.io/">Visualizing MBTA Data</a>
         <br><a href="http://hockeyimpact.darkhorseanalytics.com/?m=Pay&t=Stanley%20Cup%20Champion&ht=&hy=">Payroll effect on hockey performance</a>
         <br><a href="http://www.nytimes.com/interactive/2014/07/08/upshot/how-the-year-you-were-born-influences-your-politics.html?abt=0002&abg=0">How the year you were born influences political views</a>
+      </p>
     </section>
 
-    <section style="padding:5em 9em;">
-      <p>What is <a href="http://d3js.org/">D3</a>?
+    <section class="slide">
+      <p>HOW: What is <a href="http://d3js.org/">D3</a>?
       <br>
       <br> D3 is a low level javascript based library for turning data into web elements
+      </p>
     </section>
 
-    <section style="padding:5em 9em;">
-      <p>Your browser requests and receives a html document from a server
-      <figure>
-        <img src="client-server.jpg" alt="client server figure" />
-      </figure>
-    </section>
-    <section style="padding:5em 9em;">
-      <p>Your browser interprets the html and builds a document object model (DOM)
-    </section>
-    <section style="padding:5em 9em;">
-      <p>Your browser interprets the html and builds a document object model (DOM)
-        <ul>
-         <li>html is the set of instructions to build a DOM</li>
-         <li>the DOM is how the server understands the instructions (and subsequently displays it)</li>
-       </ul>
-    </section>
-    <section style="padding:5em 9em;">
-      <p>The DOM is represented as a tree data structure
-        <ul>
-         <li>nodes are objects with properties corresponding to html elements </li>
-         <li>hierarchy is based on the html encapsulation</li>
-       </ul>
-      <figure>
-        <img src="html.png" alt="dom-tree" />
-      </figure>
-    </section>
-
-    <section style="padding:5em 9em;">
-      <p>You use javascript to manipulate the DOM
-      <br>
-      <br>D3 gives you tools to manipulate the DOM based on data
-    </section>
-
-    <section style="padding:5em 9em; font-size:80%;">
+    <section style="padding:3em 9em; font-size:80%;">
       <p>
-      <br>Data is stored as a property of a node.
-      <br>
-      <br> If dataset changes, D3 can handle those changes easily by allowing you to decide what to do with:
-      <ul>
-       <li>new data not bound to a node (data enter)</li>
-       <li>existing data bound to a node (data join)</li>
-       <li>data that no longer exists bound to a node (data exits)</li>
-     </ul>
+        <br>Data is stored as a property of a web element.
+        <br>
+        <br> If dataset changes, D3 can handle those changes easily by allowing you to decide what to do with:
+        <ul>
+         <li>new data not bound to a web element (data enter)</li>
+         <li>existing data bound to a web element (data join)</li>
+         <li>data that no longer exists bound to a element (data exits)</li>
+       </ul>
+      </p>
     </section>
 
-    <section id="joinsec"style="padding:5em 9em;">
-      <p>Data joins, exits, enters
-      <figure id="join"> </figure>
-    </section>
-
-    <section id="dataBound" style="padding:5em 9em;">
-      <p>Once data is bound to a node, we can change properties of the node based on the data
+    <section id="dataBound" class="slide">
+      <p>Once data is bound to a web element, we can change properties of the node based on the data</p>
       <figure id="boundFig"> </figure>
     </section>
 
-    <section style="font-size:80%;padding:5em 9em;">
-      <p>D3 Pros and Cons
-      <ul> Pros
-       <li>Web based - easy to share</li>
-       <li>Flexible styling - web design constantly evolving </li>
-       <li>Easy to save static figures - SVG</li>
-      </ul>
-      <ul> Cons
-       <li>Learning Curve</li>
-       <li>Takes more time</li>
-       <li>Additional complexity</li>
-      </ul>
+    <section class="slide">
+      <p>Tutorial Part 1: Draw a Circle</p>
+      <iframe height='418' scrolling='no' src='//codepen.io/edeno/embed/aOBGWb/?height=418&theme-id=15474&default-tab=js' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'>See the Pen <a href='http://codepen.io/edeno/pen/aOBGWb/'>iSLC-2015 Part 1: Draw a Circle</a> by Eric Denovellis (<a href='http://codepen.io/edeno'>@edeno</a>) on <a href='http://codepen.io'>CodePen</a>.
+      </iframe>
+
     </section>
 
-    <section style="font-size:80%; padding:5em 9em;">
+    <section class="slide">
+      <p>Tutorial Part 2: Draw a Circle Based on Data</p>
+      <iframe height='418' scrolling='no' src='//codepen.io/edeno/embed/VLmxbK/?height=418&theme-id=15474&default-tab=js' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'>See the Pen <a href='http://codepen.io/edeno/pen/VLmxbK/'>iSLC-2015 Part 2: Draw Circles with Data</a> by Eric Denovellis (<a href='http://codepen.io/edeno'>@edeno</a>) on <a href='http://codepen.io'>CodePen</a>.
+      </iframe>
+    </section>
+
+    <section class="slide">
+      <p>Tutorial Part 3: Entering and Exiting Data</p>
+      <iframe height='418' scrolling='no' src='//codepen.io/edeno/embed/aOBGLz/?height=418&theme-id=15474&default-tab=js' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'>See the Pen <a href='http://codepen.io/edeno/pen/aOBGLz/'>iSLC-2015 Part 3: Entering and Exit Data</a> by Eric Denovellis (<a href='http://codepen.io/edeno'>@edeno</a>) on <a href='http://codepen.io'>CodePen</a>.
+      </iframe>
+    </section>
+
+    <section class="slide">
+      <p>Tutorial Part 4: Animate Circles Based on Data</p>
+      <iframe height='418' scrolling='no' src='//codepen.io/edeno/embed/qdqYjb/?height=418&theme-id=15474&default-tab=js' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'>See the Pen <a href='http://codepen.io/edeno/pen/qdqYjb/'>iSLC-2015 Part 3: Animate Circles Based on Data</a> by Eric Denovellis (<a href='http://codepen.io/edeno'>@edeno</a>) on <a href='http://codepen.io'>CodePen</a>.
+      </iframe>
+    </section>
+
+    <section class="slide" id="pros-cons">
+      <p>D3 Pros and Cons
+        <ul> Pros
+         <li>Web based - easy to share</li>
+         <li>Flexible styling - web design constantly evolving </li>
+         <li>Easy to save static figures - SVG</li>
+        </ul>
+        <ul> Cons
+         <li>Learning Curve</li>
+         <li>Takes more time</li>
+         <li>Additional complexity</li>
+        </ul>
+      </p>
+    </section>
+
+    <section class="slide" id="getting-started">
       <p>What do I need to get started?
       <br>
     		<ul>
@@ -145,10 +122,11 @@
           <li>D3 Examples: <a href="http://bl.ocks.org/mbostock">Mike Bostock (Creater of D3)</a></li>
           <li>Interactive Visualization: <a href="http://worrydream.com/LadderOfAbstraction/">Laddder of Abstraction</a></li>
         </ul>
-      <br>These slides available at <a href="https://github.com/edeno/CNSO-D3-Presentation">https://github.com/edeno/CNSO-D3-Presentation</a>
+      <br>These slides available at <a href="https://github.com/edeno/iSLC-2015-Presentation">https://github.com/edeno/iSLC-2015-Presentation</a>
+      </p>
     </section>
 
-    <script src="js/d3.v3.min.js"></script>
+    <script src="js/d3.min.js"></script>
     <script src="js/stack.v1.min.js"></script>
     <script src="js/main.js"></script>
   </body>

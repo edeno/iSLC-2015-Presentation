@@ -4,276 +4,172 @@ var mystack = stack()
     .on("deactivate", deactivate);
 
 var section = d3.selectAll("section"),
-    hist = d3.select("#histogram"),
-    histIndex = section[0].indexOf(hist.node()),
-    eff = d3.select("#effectiveVis"),
-    pathIndex = section[0].indexOf(eff.node()),
-    join = d3.select("#joinsec"),
-    joinIndex = section[0].indexOf(join.node()),
+    anscombe = d3.select("#anscombe"),
+    anscombeIndex = section[0].indexOf(anscombe.node()),
     bound = d3.select("#dataBound"),
     boundIndex = section[0].indexOf(bound.node());
 
-
-var histInterval;
-
 function activate(d, i) {
-  if (i === histIndex) {
-    startHist();
-    histInterval = setInterval(function() {
-              startHist();
-      }, 3000);
-    };
-  if (i === pathIndex) drawPath();
-  if (i === joinIndex) drawJoin();
-  if (i === boundIndex) drawBound();
+  if (i === anscombeIndex) {loadAnscombe();};
+  if (i === boundIndex) {drawBound();}
 
 }
 
 function deactivate(d, i) {
-  if (i === histIndex) stopHist();
-  if (i === pathIndex) eff.selectAll("svg").remove();
-  if (i === joinIndex) join.selectAll("svg").remove();
-  if (i === boundIndex) bound.selectAll("svg").remove();
+  if (i === boundIndex) {bound.selectAll("svg").remove();}
+  if (i === anscombeIndex) {anscombe.selectAll("div.chart").remove();}
 }
 
-// Histogram
-function startHist() {
-  var n = 50,
-      randomFunc = d3.random.normal(5, 3),
-      dataset = d3.range(n).map(randomFunc),
-      histFig = hist.select("#histVis");
+// Anscombe's Quartet
+function loadAnscombe() {
+  d3.json('DATA/anscombeQuartet.json', function(error, anscombeData) {
+    var anscombeFig = anscombe.select("#anscombeVis");
+    var margin = {top: 10, right: 10, bottom: 10, left: 10},
+        width = 290 - margin.left - margin.right,
+        height = 230 - margin.top - margin.bottom;
 
-  var margin = {top: 10, right: 30, bottom: 30, left: 30},
-      width = 400 - margin.left - margin.right,
-      height = 200 - margin.top - margin.bottom;
+    var plotDiv = anscombeFig.selectAll('div.chart').data(anscombeData);
+    plotDiv.enter()
+      .append('div')
+        .attr('class', 'chart')
+      .append('svg')
+        .append('g');
+    var plotSVG = plotDiv.select('svg')
+      .attr('width', width + margin.left + margin.right )
+      .attr('height', height + margin.top + margin.bottom );
+    var plotG = plotSVG.select('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  var xScale = d3.scale.linear()
-            .domain([-15,25])
-            .range([0, width]);
+    plotG.each(drawData)
 
-  var binned = d3.layout.histogram()
-        .bins(xScale.ticks(40))
-        (dataset);
+    function drawData(dataset) {
 
-  var histMean = d3.mean(dataset);
-  var yScale = d3.scale.linear()
-            .domain([0, d3.max(binned, function(d) { return d.y; })])
-            .range([height, 0]);
+      var curPlot = d3.select(this);
 
-  var xAxis = d3.svg.axis()
-                .scale(xScale)
-                .orient("bottom");
+      var xScale = d3.scale.linear()
+        .domain([4,22])
+        .range([0, width]);
+      var yScale = d3.scale.linear()
+        .domain([0,14])
+        .range([height, 0]);
 
-  var svg = histFig.selectAll("svg").data([{}]);
-      svg.enter()
-              .append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom);
+      setTimeout(drawTable, 0)
 
-  var svgG = svg.selectAll("g#drawingArea").data([{}]);
-      svgG.enter()
-        .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-          .attr("id", "drawingArea");
+      function drawTable() {
+        var yValues = d3.range(0,13,13/11);
 
-  var bar = svgG.selectAll("g.bar")
-                .data(binned);
-      bar.exit()
-        .remove();
-      bar.enter()
-        .append("g")
-            .attr("class", "bar");
-      bar
-        .attr("transform", function(d) {
-          return "translate(" + xScale(d.x) + "," + 0 + ")";
-        });
+        var datapoint = curPlot.selectAll('g.datapoint').data(dataset.values, function(d) {return d.x + '-' + d.y});
+        datapoint.exit()
+          .remove();
+        var datapointEnter = datapoint.enter()
+          .append('g')
+            .attr('class', 'datapoint')
+            .attr('transform', function(d, index) {
+              return 'translate(' + xScale(8) + ',' + yScale(yValues[index]) + ')';
+            });
+        datapointEnter
+            .append('circle')
+              .attr('r', 6)
+              .attr('opacity', 1E-6);
+        datapointEnter
+          .append('text')
+            .attr('x', 10)
+            .attr('y', 4.5)
+            .text(function(d) {return '(' + d.x + ', ' + d.y + ')'});
 
-  var rect = bar.selectAll("rect")
-                .data(function(d) {return [d];});
-      rect.enter()
-          .append("rect")
-            .attr("x", 1);
-  var rectSize = Math.abs(xScale(binned[0].x) - xScale(binned[0].x + binned[0].dx));
-      rect
-        .transition()
-          .duration(1000)
-        .attr("height", function(d) {
-            return height - yScale(d.y);
-        })
-        .attr("y", function(d) {
-            return yScale(d.y);
-        })
-        .attr("width", function(d) {
-          return rectSize - 1;
-        });
-  var gAxis = svgG.selectAll("g.xAxis").data([{}]);
-      gAxis.enter()
-        .append("g")
-          .attr("class", "xAxis")
-          .attr("transform", "translate(0," + height + ")");
-      gAxis
-        .call(xAxis);
+        curPlot.selectAll('path').remove();
+        datapoint
+          .call(moveDot, 3000)
 
-  var meanBar = svgG.selectAll("rect#Mean")
-                    .data([histMean]);
-      meanBar.enter()
-        .append("rect")
-          .attr("id", "Mean")
-          .attr("height", height)
-          .attr("y", 0)
-          .attr("fill", "red")
-          .attr("opacity", .6);
-     meanBar
-       .transition()
-         .duration(500)
-       .attr("x", function(d) {return xScale(d);})
-       .attr("width", rectSize/2);
+        curPlot.selectAll('text')
+          .call(showCoordinates, 3000);
 
-}
+        setTimeout(drawRegressionLine, 9000)
 
-function stopHist() {
-  histInterval = clearInterval(histInterval);
-}
-// Moving Line
-function drawPath() {
-  var n = 40,
-      randomFunc = d3.random.normal(0, .4),
-      data = d3.range(n).map(randomFunc),
-      pathFig = eff.select("#pathVis");
-  var margin = {top: 20, right: 20, bottom: 20, left: 40},
-      width = 800 - margin.left - margin.right,
-      height = 200 - margin.top - margin.bottom;
-  var xScale = d3.scale.linear()
-            .domain([0, n - 1])
-            .range([0, width]);
-  var yScale = d3.scale.linear()
-            .domain([-1, 1])
-            .range([height, 0]);
-  var line = d3.svg.line()
-            .interpolate("basis")
-            .x(function(d, i) { return xScale(i); })
-            .y(function(d, i) { return yScale(d); });
-  var svg = pathFig.selectAll("svg").data([{}]);
-      svg.enter()
-              .append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom);
+        function moveDot(selection, duration) {
+          selection.transition()
+            .duration(duration)
+            .attr('transform', function(d, index) {
+              return 'translate(' + xScale(8) + ',' + yScale(yValues[index]) + ')';
+            })
+            .each('end', function() {
+              curPlot.selectAll('circle').transition()
+                .duration(1000)
+                .attr('opacity', 0.7);
+            });
+        }
 
-  var svgG = svg.selectAll("g#drawingArea").data([{}]).enter()
-        .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-          .attr("id", "drawingArea");
+        function showCoordinates(selection, duration) {
+          selection.transition()
+            .duration(duration)
+            .attr('opacity', 0.7);
+        }
+      }
 
-  var defs = svgG.selectAll("defs").data([{}]).enter()
-          .append("defs")
-            .append("clipPath")
-              .attr("id", "clip")
-            .append("rect")
-              .attr("width", width)
-              .attr("height", height);
+      function drawRegressionLine() {
+        var datapoint = curPlot.selectAll('g.datapoint');
 
-  var xAxis = d3.svg.axis()
-                  .scale(xScale)
-                  .ticks(0)
-                  .orient("bottom");
-  var xAxisG = svgG.selectAll("g.xAxis").data([{}]);
-  xAxisG.enter()
-      .append("g")
-        .attr("class", "xAxis")
-        .attr("transform", "translate(0," + yScale(0) + ")");
-  xAxisG
-    .call(xAxis);
-  var yAxis = svgG.selectAll("g.yAxis").data([{}]);
-  yAxis.enter()
-    .append("g")
-      .attr("class", "yAxis");
-  yAxis
-    .call(d3.svg.axis().scale(yScale).ticks(3).orient("left"));
-  var clip = svgG.selectAll("g#clip").data([{}]);
-      clip.enter()
-        .append("g")
-        .attr("id", "clip")
-        .attr("clip-path", "url(#clip)");
+        datapoint
+          .call(moveDot, 3000);
+        curPlot.selectAll('text')
+          .call(fadeCoordinates, 3000);
 
-  var path = clip.selectAll("path.line")
-              .data([data]);
-  path.enter()
-    .append("path")
-    .attr("class", "line");
-  path
-    .attr("d", line);
-  var format = d3.format(".1f");
-  tick();
+        var lineFun = d3.svg.line()
+          .x(function(d) { return xScale(d.x); })
+          .y(function(d) { return yScale(3 + (0.500 * d.x)); })
+          .interpolate('linear');
 
-  function tick() {
-    // push a new data point onto the back
-    data.push(randomFunc());
-    // redraw the line, and slide it to the left
-    path
-      .attr("d", line)
-      .attr("transform", null)
-    .transition()
-      .duration(500)
-      .ease("linear")
-    .attr("transform", "translate(" + xScale(-1) + ",0)")
-      .each("end", tick);
-    var text = clip.selectAll("text.number")
-          .data(data);
-    text.exit()
-        .remove();
-    text.enter()
-      .append("text")
-      .attr("class", "number")
-      .attr("y", height)
-      .style("font-size", "9px");
-    text
-      .attr("x", function(d, i) {
-        return xScale(i);
-      })
-      .text(function(d) {
-        return format(d);
-        });
-    // pop the old data point off the front
-    data.shift();
-  }
-}
-//
-function drawJoin() {
+        var line = curPlot.selectAll('path').data([dataset.values])
 
-  var joinFig = join.selectAll("#join"),
-      margin = {top: 30, right: 30, bottom: 30, left: 30},
-      width = 400 - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
-  var svg = joinFig.selectAll("svg").data([{}]);
-      svg.enter()
-              .append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom);
 
-  var svgG = svg.selectAll("g#drawingArea").data([{}]);
-      svgG.enter()
-        .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-          .attr("id", "drawingArea");
+        setTimeout(drawScatter, 9000);
 
-  var data = svgG.append("g").attr("transform", "translate(110,110)");
-      data.append("circle").style("fill", "#3182bd");
-      data.append("text").attr("y", -120).text("Data").style("font-weight", "bold");
-      data.append("text").attr("x", -50).text("Enter");
+        function moveDot(selection, duration) {
+          selection.transition()
+            .duration(duration)
+            .attr('transform', function(d) {
+              return 'translate(' + xScale(d.x) + ',' + yScale(3 + (0.500 * d.x)) + ')';
+            })
+            .each('end', function() {
+              line.enter().append('path')
+                .attr('d', lineFun)
+                .attr('stroke-width', '3px');
+            });
+        }
 
-  svgG.append("text").attr("x", 170).attr("y", 110).text("Update");
+        function fadeCoordinates(selection, duration) {
+          selection.transition()
+            .duration(duration)
+            .attr('opacity', 1E-6);
+        }
+      }
+      function drawScatter() {
 
-  var elements = svgG.append("g").attr("transform", "translate(230,110)");
-  elements.append("circle").style("fill", "#e6550d");
-  elements.append("text").attr("y", -120).text("Elements").style("font-weight", "bold");
-  elements.append("text").attr("x", 50).text("Exit");
+        var datapoint = curPlot.selectAll('g.datapoint');
+        datapoint
+          .call(moveDot, 3000);
+        curPlot.selectAll('text')
+          .call(fadeCoordinates, 3000);
 
-  svgG.selectAll("circle")
-      .attr("r", 110);
+        setTimeout(drawTable, 9000);
 
-  svgG.selectAll("text")
-      .attr("dy", ".35em")
-      .attr("text-anchor", "middle");
+        function moveDot(selection, duration) {
+          selection.transition()
+            .duration(duration)
+            .attr('transform', function(d) {
+              return 'translate(' + xScale(d.x) + ',' + yScale(d.y) + ')';
+            });
+        }
+
+        function fadeCoordinates(selection, duration) {
+          selection.transition()
+            .duration(duration)
+            .attr('opacity', 1E-6);
+        }
+      }
+    }
+
+  })
 }
 
 function drawBound() {
