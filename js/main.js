@@ -189,23 +189,26 @@ function drawBound() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
           .attr("id", "drawingArea");
 
-  var circle = svgG.selectAll("circle")
-    .data([300, 1000, 7000], function(d) { return d; });
+  var xScale = d3.scale.linear()
+    .domain([0, 10000])
+    .range([0, width]);
+
+  var DATA = [300, 4000, 7000];
+
+  var circle = svgG.selectAll("circle").data(DATA, String);
 
   circle.enter()
     .append("circle")
       .attr("cy", 60)
-      .attr("cx", function(d, i) { return i * 200 + 30; });
+      .attr("cx", function(d) { return xScale(d); })
+      .attr("r", function(d) { return Math.sqrt(d); });
   var text = svgG.selectAll("text")
-    .data([600, 1000, 7000], function(d) { return d; });
+    .data(DATA, String);
   text.enter()
       .append("text")
-        .attr("y", 60)
-        .attr("x", function(d, i) { return i * 200 + 15; })
-        .style("font-size", "12px")
-        .text(function(d) {return d;});
-  circle
-      .attr("r", function(d) { return Math.sqrt(d); });
+        .attr("y", 66)
+        .attr("x", function(d) { return xScale(d); })
+        .style('text-anchor', 'middle')
+        .text(String);
 
-  circle.exit().remove();
 }
